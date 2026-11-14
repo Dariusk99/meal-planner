@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meal_planner/features/auth/view/auth_gate.dart';
 
 import 'package:meal_planner/features/landing/view/landing_screen.dart';
 
@@ -13,7 +14,7 @@ class MealPlannerApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LandingScreen(),
+      home: AuthGate(),
     );
   }
 }

@@ -1,13 +1,64 @@
 import 'package:flutter/material.dart';
 
+import 'package:meal_planner/features/auth/service/auth_service.dart';
+import 'package:meal_planner/features/auth/service/session_service.dart';
+import 'package:meal_planner/features/auth/viewmodel/auth_viewmodel.dart';
 import 'package:meal_planner/features/auth/widgets/auth_text_field.dart';
 import 'package:meal_planner/features/auth/widgets/social_login_button.dart';
+import 'package:meal_planner/features/home/view/home_screen.dart';
 
-class SignInScreen extends StatelessWidget {
+class SignInScreen extends StatefulWidget {
   const new({super.key});
 
+  @override
+  State<SignInScreen> createState() => _SignInScreenState();
+}
+
+class _SignInScreenState extends State<SignInScreen> {
   static const Color _primaryPurple = Color(0xFF471AA0);
   static const Color _lightPurple = Color(0xFFB678E6);
+
+  final TextEditingController _loginController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  final AuthViewModel _authViewModel = AuthViewModel(
+    AuthService(),
+    SessionService(),
+  );
+
+  Future<void> _signIn() async {
+    final isAuthenticated = await _authViewModel.signIn(
+      login: _loginController.text.trim(),
+      password: _passwordController.text,
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    if (!isAuthenticated) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Invalid login or password'),
+        ),
+      );
+
+      return;
+    }
+
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute<void>(
+        builder: (_) => const HomeScreen(),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _loginController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +104,8 @@ class SignInScreen extends StatelessWidget {
 
                       const SizedBox(height: 46),
 
-                      const AuthTextField(
+                      AuthTextField(
+                        controller: _loginController,
                         hintText: 'Email or user name',
                         prefixIcon: Icons.person_outline,
                         textShadow: true,
@@ -61,11 +113,12 @@ class SignInScreen extends StatelessWidget {
 
                       const SizedBox(height: 40),
 
-                      const AuthTextField(
+                      AuthTextField(
+                        controller: _passwordController,
                         hintText: 'Password',
                         prefixIcon: Icons.lock_outline,
                         obscureText: true,
-                        suffixIcon: Icon(
+                        suffixIcon: const Icon(
                           Icons.visibility_outlined,
                           color: Color.fromRGBO(0, 0, 0, 0.70),
                         ),
@@ -94,7 +147,7 @@ class SignInScreen extends StatelessWidget {
                         width: double.infinity,
                         height: 50,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: _signIn,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: _lightPurple,
                             foregroundColor: Colors.white,
