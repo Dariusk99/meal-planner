@@ -6,14 +6,14 @@ class CircleState {
   final double size;
   final Color color;
 
-  const CircleState({
+  const new({
     required this.top,
     required this.left,
     required this.size,
     required this.color,
   });
 
-  static CircleState lerp(
+  factory lerp(
       CircleState start,
       CircleState end,
       double progress,

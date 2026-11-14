@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 
-import '../model/landing_frame.dart';
-import 'landing_circle.dart';
+import 'package:meal_planner/features/landing/model/landing_frame.dart';
+import 'package:meal_planner/features/landing/widgets/landing_circle.dart';
 
 class LandingBackground extends StatelessWidget {
   final LandingFrame frame;
 
-  const LandingBackground({
-    super.key,
+  const new({
     required this.frame,
+    super.key,
   });
 
   @override
   Widget build(BuildContext context) {
     return Stack(
-      clipBehavior: Clip.hardEdge,
       children: [
         LandingCircle(state: frame.topLeft),
         LandingCircle(state: frame.topRight),

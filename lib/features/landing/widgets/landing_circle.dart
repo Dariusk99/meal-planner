@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../model/circle_state.dart';
+import 'package:meal_planner/features/landing/model/circle_state.dart';
 
 class LandingCircle extends StatelessWidget {
   final CircleState state;
 
-  const LandingCircle({
-    super.key,
+  const new({
     required this.state,
+    super.key,
   });
 
   @override

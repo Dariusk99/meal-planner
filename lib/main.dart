@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import 'features/landing/view/landing_screen.dart';
+import 'package:meal_planner/features/landing/view/landing_screen.dart';
 
 void main() {
   runApp(const MealPlannerApp());
 }
 
 class MealPlannerApp extends StatelessWidget {
-  const MealPlannerApp({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,4 @@
-import 'circle_state.dart';
+import 'package:meal_planner/features/landing/model/circle_state.dart';
 
 class LandingFrame {
   final CircleState topLeft;
@@ -6,14 +6,14 @@ class LandingFrame {
   final CircleState bottomLeft;
   final CircleState bottomRight;
 
-  const LandingFrame({
+  const new({
     required this.topLeft,
     required this.topRight,
     required this.bottomLeft,
     required this.bottomRight,
   });
 
-  static LandingFrame lerp(
+  factory lerp(
       LandingFrame start,
       LandingFrame end,
       double progress,
