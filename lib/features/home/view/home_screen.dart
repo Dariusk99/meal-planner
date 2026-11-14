@@ -1,9 +1,62 @@
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatelessWidget {
+import 'package:meal_planner/features/recipe/model/recipe.dart';
+import 'package:meal_planner/features/recipe/repository/recipe_repository.dart';
+import 'package:meal_planner/features/recipe/service/recipe_database.dart';
+import 'package:meal_planner/features/recipe/view/add_recipe_screen.dart';
+import 'package:meal_planner/features/recipe/view/recipe_edit_screen.dart';
+
+class HomeScreen extends StatefulWidget {
   const new({super.key});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   static const Color _primaryPurple = Color(0xFF471AA0);
+
+  final RecipeRepository _recipeRepository = RecipeRepository(
+    RecipeDatabase(),
+  );
+
+  late Future<List<Recipe>> _recipesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRecipes();
+  }
+
+  void _loadRecipes() {
+    _recipesFuture = _recipeRepository.getRecipes();
+  }
+
+  Future<void> _openRecipe(Recipe recipe) async {
+    final wasEdited = await Navigator.of(context).push<bool>(
+      MaterialPageRoute<bool>(
+        builder: (_) => RecipeEditScreen(
+          recipe: recipe,
+        ),
+      ),
+    );
+
+    if (wasEdited ?? false) {
+      setState(_loadRecipes);
+    }
+  }
+
+  Future<void> _openAddRecipe() async {
+    final wasAdded = await Navigator.of(context).push<bool>(
+      MaterialPageRoute<bool>(
+        builder: (_) => const AddRecipeScreen(),
+      ),
+    );
+
+    if (wasAdded ?? false) {
+      setState(_loadRecipes);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,16 +74,81 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: const Center(
-        child: Text(
-          'Home Screen',
-          style: TextStyle(
-            fontFamily: 'Inter',
-            fontSize: 24,
-            fontWeight: FontWeight.w700,
-            color: _primaryPurple,
-          ),
-        ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: _primaryPurple,
+        foregroundColor: Colors.white,
+        onPressed: _openAddRecipe,
+        child: const Icon(Icons.add),
+      ),
+      body: FutureBuilder<List<Recipe>>(
+        future: _recipesFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                'Error: ${snapshot.error}',
+              ),
+            );
+          }
+
+          final recipes = snapshot.data ?? [];
+
+          if (recipes.isEmpty) {
+            return const Center(
+              child: Text(
+                'No recipes yet',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            );
+          }
+
+          return ListView.separated(
+            padding: const EdgeInsets.all(20),
+            itemCount: recipes.length,
+            separatorBuilder: (_, _) {
+              return const SizedBox(height: 12);
+            },
+            itemBuilder: (context, index) {
+              final recipe = recipes[index];
+
+              return ListTile(
+                onTap: () => _openRecipe(recipe),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  side: const BorderSide(
+                    color: Color(0xFFB678E6),
+                  ),
+                ),
+                title: Text(
+                  recipe.name,
+                  style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                subtitle: Text(
+                  recipe.ingredients,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                trailing: const Icon(
+                  Icons.chevron_right,
+                  color: _primaryPurple,
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
