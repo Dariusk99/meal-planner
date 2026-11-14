@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:meal_planner/features/auth/repository/user_repository.dart';
 
 import 'package:meal_planner/features/auth/service/auth_service.dart';
 import 'package:meal_planner/features/auth/service/session_service.dart';
+import 'package:meal_planner/features/auth/view/signup_screen.dart';
 import 'package:meal_planner/features/auth/viewmodel/auth_viewmodel.dart';
 import 'package:meal_planner/features/auth/widgets/auth_text_field.dart';
 import 'package:meal_planner/features/auth/widgets/social_login_button.dart';
 import 'package:meal_planner/features/home/view/home_screen.dart';
+import 'package:meal_planner/features/recipe/service/recipe_database.dart';
 
 class SignInScreen extends StatefulWidget {
   const new({super.key});
@@ -22,7 +25,11 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _passwordController = TextEditingController();
 
   final AuthViewModel _authViewModel = AuthViewModel(
-    AuthService(),
+    AuthService(
+      UserRepository(
+        RecipeDatabase(),
+      ),
+    ),
     SessionService(),
   );
 
@@ -238,25 +245,41 @@ class _SignInScreenState extends State<SignInScreen> {
                       const SizedBox(height: 103),
 
                       Center(
-                        child: RichText(
-                          text: const TextSpan(
-                            style: TextStyle(
-                              fontFamily: 'Inter',
-                              color: _primaryPurple,
-                              fontSize: 14,
-                            ),
-                            children: [
-                              TextSpan(
-                                text: "Don't have account? ",
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text(
+                              "Don't have account? ",
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                color: _primaryPurple,
+                                fontSize: 14,
                               ),
-                              TextSpan(
-                                text: 'Sign up',
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute<void>(
+                                    builder: (_) => const SignUpScreen(),
+                                  ),
+                                );
+                              },
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              child: const Text(
+                                'Sign up',
                                 style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  color: _primaryPurple,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
 

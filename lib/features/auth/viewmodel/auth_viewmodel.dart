@@ -2,19 +2,19 @@ import 'package:meal_planner/features/auth/service/auth_service.dart';
 import 'package:meal_planner/features/auth/service/session_service.dart';
 
 class AuthViewModel {
-  final AuthService _authService;
-  final SessionService _sessionService;
-
   AuthViewModel(
       this._authService,
       this._sessionService,
       );
 
+  final AuthService _authService;
+  final SessionService _sessionService;
+
   Future<bool> signIn({
     required String login,
     required String password,
   }) async {
-    final isAuthenticated = _authService.authenticate(
+    final isAuthenticated = await _authService.authenticate(
       login: login,
       password: password,
     );

@@ -1,12 +1,19 @@
-class AuthService {
-  static const String _validLogin = 'login';
-  static const String _validPassword = 'password';
+import 'package:meal_planner/features/auth/repository/user_repository.dart';
 
-  bool authenticate({
+class AuthService {
+  AuthService(this._userRepository);
+
+  final UserRepository _userRepository;
+
+  Future<bool> authenticate({
     required String login,
     required String password,
-  }) {
-    return login == _validLogin &&
-        password == _validPassword;
+  }) async {
+    final user = await _userRepository.findUser(
+      login: login,
+      password: password,
+    );
+
+    return user != null;
   }
 }
