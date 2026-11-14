@@ -250,7 +250,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                 text: "Don't have account? ",
                               ),
                               TextSpan(
-                                text: 'Sign Up',
+                                text: 'Sign up',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),

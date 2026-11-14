@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:meal_planner/features/auth/service/session_service.dart';
+import 'package:meal_planner/features/auth/view/signin_screen.dart';
 
 import 'package:meal_planner/features/recipe/model/recipe.dart';
 import 'package:meal_planner/features/recipe/repository/recipe_repository.dart';
@@ -15,10 +17,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   static const Color _primaryPurple = Color(0xFF471AA0);
+  final SessionService _sessionService = SessionService();
 
-  final RecipeRepository _recipeRepository = RecipeRepository(
-    RecipeDatabase(),
-  );
+  final RecipeRepository _recipeRepository = RecipeRepository(RecipeDatabase());
 
   late Future<List<Recipe>> _recipesFuture;
 
@@ -32,13 +33,22 @@ class _HomeScreenState extends State<HomeScreen> {
     _recipesFuture = _recipeRepository.getRecipes();
   }
 
+  Future<void> _signOut() async {
+    await _sessionService.clearLoginSession();
+
+    if (!mounted) {
+      return;
+    }
+
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute<void>(builder: (_) => const SignInScreen()),
+      (route) => false,
+    );
+  }
+
   Future<void> _openRecipe(Recipe recipe) async {
     final wasEdited = await Navigator.of(context).push<bool>(
-      MaterialPageRoute<bool>(
-        builder: (_) => RecipeEditScreen(
-          recipe: recipe,
-        ),
-      ),
+      MaterialPageRoute<bool>(builder: (_) => RecipeEditScreen(recipe: recipe)),
     );
 
     if (wasEdited ?? false) {
@@ -48,9 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _openAddRecipe() async {
     final wasAdded = await Navigator.of(context).push<bool>(
-      MaterialPageRoute<bool>(
-        builder: (_) => const AddRecipeScreen(),
-      ),
+      MaterialPageRoute<bool>(builder: (_) => const AddRecipeScreen()),
     );
 
     if (wasAdded ?? false) {
@@ -68,11 +76,15 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 0,
         title: const Text(
           'Meal Planner',
-          style: TextStyle(
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w700,
-          ),
+          style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w700),
         ),
+        actions: [
+          IconButton(
+            onPressed: _signOut,
+            icon: const Icon(Icons.logout),
+            tooltip: 'Sign out',
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: _primaryPurple,
@@ -84,17 +96,11 @@ class _HomeScreenState extends State<HomeScreen> {
         future: _recipesFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                'Error: ${snapshot.error}',
-              ),
-            );
+            return Center(child: Text('Error: ${snapshot.error}'));
           }
 
           final recipes = snapshot.data ?? [];
@@ -125,9 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 onTap: () => _openRecipe(recipe),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
-                  side: const BorderSide(
-                    color: Color(0xFFB678E6),
-                  ),
+                  side: const BorderSide(color: Color(0xFFB678E6)),
                 ),
                 title: Text(
                   recipe.name,
