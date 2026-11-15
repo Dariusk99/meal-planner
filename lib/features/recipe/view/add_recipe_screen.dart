@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:meal_planner/features/auth/service/session_service.dart';
 import 'package:meal_planner/features/recipe/model/recipe.dart';
 import 'package:meal_planner/features/recipe/repository/recipe_repository.dart';
 import 'package:meal_planner/features/recipe/service/recipe_database.dart';
@@ -20,8 +21,17 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
     RecipeDatabase(),
   );
 
+  final SessionService _sessionService = SessionService();
+
   Future<void> _saveRecipe() async {
+    final userId = await _sessionService.getUserId();
+
+    if (userId == null) {
+      return;
+    }
+
     final recipe = Recipe(
+      userId: userId,
       name: _nameController.text.trim(),
       ingredients: _ingredientsController.text.trim(),
       description: _descriptionController.text.trim(),

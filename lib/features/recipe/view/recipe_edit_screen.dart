@@ -45,6 +45,7 @@ class _RecipeEditScreenState extends State<RecipeEditScreen> {
   Future<void> _saveRecipe() async {
     final updatedRecipe = Recipe(
       id: widget.recipe.id,
+      userId: widget.recipe.userId,
       name: _nameController.text.trim(),
       ingredients: _ingredientsController.text.trim(),
       description: _descriptionController.text.trim(),
@@ -101,7 +102,10 @@ class _RecipeEditScreenState extends State<RecipeEditScreen> {
       return;
     }
 
-    await _recipeRepository.deleteRecipe(recipeId);
+    await _recipeRepository.deleteRecipe(
+      recipeId,
+      widget.recipe.userId,
+    );
 
     if (!mounted) {
       return;

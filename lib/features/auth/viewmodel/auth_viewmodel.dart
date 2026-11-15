@@ -14,16 +14,16 @@ class AuthViewModel {
     required String login,
     required String password,
   }) async {
-    final isAuthenticated = await _authService.authenticate(
+    final user = await _authService.authenticate(
       login: login,
       password: password,
     );
 
-    if (!isAuthenticated) {
+    if (user == null || user.id == null) {
       return false;
     }
 
-    await _sessionService.saveLoginSession();
+    await _sessionService.saveLoginSession(user.id!);
 
     return true;
   }

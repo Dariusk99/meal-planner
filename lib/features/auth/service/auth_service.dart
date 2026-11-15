@@ -1,3 +1,4 @@
+import 'package:meal_planner/features/auth/model/user.dart';
 import 'package:meal_planner/features/auth/repository/user_repository.dart';
 
 class AuthService {
@@ -5,15 +6,13 @@ class AuthService {
 
   final UserRepository _userRepository;
 
-  Future<bool> authenticate({
+  Future<User?> authenticate({
     required String login,
     required String password,
-  }) async {
-    final user = await _userRepository.findUser(
+  }) {
+    return _userRepository.findUser(
       login: login,
       password: password,
     );
-
-    return user != null;
   }
 }

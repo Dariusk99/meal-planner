@@ -15,11 +15,13 @@ class RecipeRepository {
     );
   }
 
-  Future<List<Recipe>> getRecipes() async {
+  Future<List<Recipe>> getRecipesForUser(int userId) async {
     final database = await _recipeDatabase.database;
 
     final result = await database.query(
       'recipes',
+      where: 'userId = ?',
+      whereArgs: [userId],
       orderBy: 'id DESC',
     );
 
@@ -32,18 +34,27 @@ class RecipeRepository {
     return database.update(
       'recipes',
       recipe.toMap(),
-      where: 'id = ?',
-      whereArgs: [recipe.id],
+      where: 'id = ? AND userId = ?',
+      whereArgs: [
+        recipe.id,
+        recipe.userId,
+      ],
     );
   }
 
-  Future<int> deleteRecipe(int id) async {
+  Future<int> deleteRecipe(
+      int id,
+      int userId,
+      ) async {
     final database = await _recipeDatabase.database;
 
     return database.delete(
       'recipes',
-      where: 'id = ?',
-      whereArgs: [id],
+      where: 'id = ? AND userId = ?',
+      whereArgs: [
+        id,
+        userId,
+      ],
     );
   }
 }
